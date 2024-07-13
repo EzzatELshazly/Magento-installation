@@ -527,3 +527,5 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 ![redirect to https with ssl](https://github.com/user-attachments/assets/9a75167a-8155-4ab7-8bcb-6ff137385580)
+
+![https devolper mode](https://github.com/user-attachments/assets/0fefca8f-b55d-4d5f-bf6f-8003c4b2d442)
