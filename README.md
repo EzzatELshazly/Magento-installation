@@ -239,7 +239,6 @@ cd /opt/magento/website
 > - Click your account name in the top right of the page and select My Profile.
 > - Click Access Keys in the Marketplace tab.
 ![acesskety](https://github.com/user-attachments/assets/bd6cb4f2-421b-4ff7-9705-bf6357506de4)
-63-49c9-99be-8a7dc5590f0e)
 > - Click Create a New Access Key. Enter a specific name for the keys and click OK.
 > - New public and private keys are now associated with your account that you can click to copy. Save this information or keep the page open when working with your project. Use the Public key as your username and the Private key as your password.
 > 
