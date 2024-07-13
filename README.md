@@ -1,22 +1,22 @@
 # Magento-installation
-# Overview:
-We will set up a single server for Magento 2 Open Source, with these services as shown in the architecture bellow
-- :white_circle: nginx
-- :white_circle: php-fpm 
-- :white_circle: MySQL
-- :white_circle: Varnish
-- :white_circle: Redis
-- :white_circle: OpenSearch
+## Overview:
 
-<p align="center"><img src="screenshots/Architecture.png" width="90%" height="90%">
-<br><em>Architecture</em>
-</p>
+- We will set up a single server for Magento 2 Open Source, with these services:
+  -  Nginx
+  -  php-fpm
+  -  MySQL
+  -  Varnish
+  -  Redis
+  -  OpenSearch
 
-* I have created a new user and a new path to work in
-* Magento will be ran by a new system user called magento. Let’s create a new system user now, execute this command below.
+- Architecture as shown in the image bellow:
+!<img width="1320" alt="Archeticture" src="https://github.com/user-attachments/assets/9f6de9ad-2ed5-44e3-b458-d8e00aa81ee9">
 
-```shell
-$ /usr/sbin/adduser \
+## Quick Start Guide:
+- I have created a new user and a new path to work in.
+- Magento will be ran by a new system user called magento. Let’s create a new system user now, execute this command below:
+```
+/usr/sbin/adduser \
    --system \
    --shell /bin/bash \
    --gecos 'Magento user' \
@@ -24,68 +24,80 @@ $ /usr/sbin/adduser \
    --home /opt/magento \
 magento
 ```
-* Then, let’s give the new user a password. You will be prompted to type the password for user ‘magento’ twice, the password will not be shown there in your screen.
-```shell
-$ passwd magento
+- Then, let’s give the new user a password. You will be prompted to type the password for user ‘magento’ twice, the password will not be shown there in your screen:
 ```
-* Once done, we can give the new user a sudo privilege.
-```shell
-$ usermod -aG sudo magento
+passwd magento
 ```
-* Let’s switch to the new user now. From now on, the commands will be run by the new user.
-```shell
-$ su - magento
+Once done, we can give the new user a sudo privilege:
 ```
-### Let’s install PHP 8.3 and its extensions.
-```shell
-$ sudo apt install php-{bcmath,common,curl,fpm,gd,intl,mbstring,mysql,soap,xml,xsl,zip,cli}
+usermod -aG sudo magento
 ```
-* Next, we need to modify the following settings in the php.ini file:
-Increase memory_limit to 512M
-Set short_open_tag to On
-Set upload_max_filesize to 128M
-Increase max_execution_time to 3600
-Let’s make the changes by executing these commands
-```shell
-$ sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/8.3/fpm/php.ini
-$ sudo sed -i "s/upload_max_filesize = .*/upload_max_filesize = 128M/" /etc/php/8.3/fpm/php.ini
-$ sudo sed -i "s/short_open_tag = .*/short_open_tag = On/" /etc/php/8.3/fpm/php.ini
-$ sudo sed -i "s/max_execution_time = .*/max_execution_time = 3600/" /etc/php/8.3/fpm/php.ini
+- Let’s switch to the new user now. From now on, the commands will be run by the new user:
 ```
-Then, let’s create a PHP-FPM pool.
-```shell
-$ sudo vim /etc/php/8.3/fpm/pool.d/magento.conf
-```
-We need to insert the following into the file.
-```shell
-[magento]
-user = magento
-group = magento
-
-listen = /run/php/magento.sock
-listen.owner = magento
-listen.group = magento
-pm = ondemand
-pm.max_children = 50
-pm.start_servers = 10
-pm.min_spare_servers = 5
-pm.max_spare_servers = 10
-```
-Save the file and then exit from the file editor and don’t forget to restart php-fpm service
-```shell
-$ sudo systemctl restart php8.3-fpm
+su - magento
 ```
 
-### Install Nginx
-```shell
-$ sudo apt install nginx -y
+### Intsall php:
+- Let’s install PHP 8.3 and its extensions:
 ```
- we need to create an nginx server block for our Magento website.
-```shell
-$ sudo vim /etc/nginx/sites-enabled/magento.conf
+sudo apt install php-{bcmath,common,curl,fpm,gd,intl,mbstring,mysql,soap,xml,xsl,zip,cli}
 ```
-```shell
-Insert the following into the configuration file.
+- Next, we need to modify the following settings in the php.ini file:
+  
+ Increase memory_limit to 512M
+
+ Set short_open_tag to On
+ 
+ Set upload_max_filesize to 128M
+ 
+ Increase max_execution_time to 3600
+ 
+- Let’s make the changes by executing these commands:
+```
+sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/8.3/fpm/php.ini
+```
+```
+sudo sed -i "s/upload_max_filesize = .*/upload_max_filesize = 128M/" /etc/php/8.3/fpm/php.ini
+```
+```
+sudo sed -i "s/short_open_tag = .*/short_open_tag = On/" /etc/php/8.3/fpm/php.ini
+```
+```
+sudo sed -i "s/max_execution_time = .*/max_execution_time = 3600/" /etc/php/8.3/fpm/php.ini
+```
+- Then, let’s create a PHP-FPM pool:
+```
+sudo vim /etc/php/8.3/fpm/pool.d/magento.conf
+```
+  -  We need to insert the following into the file:
+  ```
+  [magento]
+  user = magento
+  group = magento
+  listen = /run/php/magento.sock
+  listen.owner = magento
+  listen.group = magento
+  pm = ondemand
+  pm.max_children = 50
+  pm.start_servers = 10
+  pm.min_spare_servers = 5
+  pm.max_spare_servers = 10
+  ```
+-  Save the file and then exit from the file editor and don’t forget to restart php-fpm service:
+```
+sudo systemctl restart php8.3-fpm
+```
+
+### Install Nginx:
+```
+sudo apt install nginx -y
+```
+-  We need to create an nginx server block for our Magento website:
+```
+sudo vim /etc/nginx/sites-enabled/magento.conf
+```
+-  Insert the following into the configuration file:
+```
 upstream fastcgi_backend {
 server unix:/run/php/magento.sock;
 }
@@ -102,21 +114,29 @@ error_log /var/log/nginx/magento-error.log;
 include /opt/magento/website/nginx.conf.sample;
 }
 ```
-Save the file, then exit.
+  - Save the file, then exit.
 > [!NOTE]
-> Don’t forget to change your server name to your actual name in my case I used localhost
-### Install OpenSearch
-```shell
-$ sudo apt install curl gnupg2
-$ curl -o- https://artifacts.opensearch.org/publickeys/opensearch.pgp | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/opensearch-keyring
-$ echo "deb [signed-by=/usr/share/keyrings/opensearch-keyring] https://artifacts.opensearch.org/releases/bundle/opensearch/2.x/apt stable main" | sudo tee /etc/apt/sources.list.d/opensearch-2.x.list
-$ sudo apt update
+>  Don’t forget to change your server name to your actual name in my case I used `localhost`.
+
+### Install OpenSearch:
 ```
-With the repository information added, we can list all available versions of OpenSearch:
-```shell
-$ sudo apt list -a opensearch
+sudo apt install curl gnupg2
 ```
-The output should be similar to this 
+```
+curl -o- https://artifacts.opensearch.org/publickeys/opensearch.pgp | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/opensearch-keyring
+```
+```
+echo "deb [signed-by=/usr/share/keyrings/opensearch-keyring] https://artifacts.opensearch.org/releases/bundle/opensearch/2.x/apt stable main" | sudo tee /etc/apt/sources.list.d/opensearch-2.x.list
+```
+```
+sudo apt update
+```
+-  With the repository information added, we can list all available versions of OpenSearch:
+```
+sudo apt list -a opensearch
+```
+- The output should be similar to this:
+```hcl
 magento@ip-10-101-1-245:~$ sudo apt list -a opensearch
 [sudo] password for magento:
 Listing... Done
@@ -132,173 +152,373 @@ opensearch/stable 2.8.0 amd64
 opensearch/stable 2.7.0 amd64
 opensearch/stable 2.6.0 amd64
 opensearch/stable 2.5.0 amd64
-
-```shell
-
 ```
-```shell
-
+-  OpenSearch 2.11.1 by running this command below:
 ```
-```shell
-
+sudo apt install opensearch=2.11.1
 ```
-```shell
-
+-  OpenSearch uses SSL, but Magento doesn’t use it. So, we need to disable the SSL plugin in OpenSearch for successful Magento installation:
 ```
-```shell
-
+sudo vim /etc/opensearch/opensearch.yml
 ```
-```shell
-
+-  And add this to the end of yml file:
 ```
-```shell
-
+plugins.security.disabled: true
 ```
-```shell
-
+- we can enable the service and start it now:
 ```
-```shell
-
+sudo systemctl enable --now opensearch
 ```
-```shell
-
+-  Once it’s up and running, we can run this command to verify:
 ```
-```shell
+curl -X GET localhost:9200
+```
+  - The command will return an output similar to this:
+  ```
+  {
+  "name" : "10.101.1.245",
+  "cluster_name" : "opensearch",
+  "cluster_uuid" : "zYOQTFzMQxmhhP29-u9eHA",
+  "version" : {
+    "distribution" : "opensearch",
+    "number" : "2.11.1",
+    "build_type" : "deb",
+    "build_hash" : "6b1986e964d440be9137eba1413015c31c5a7752",
+    "build_date" : "2023-11-29T21:43:44.221253956Z",
+    "build_snapshot" : false,
+    "lucene_version" : "9.7.0",
+    "minimum_wire_compatibility_version" : "7.10.0",
+    "minimum_index_compatibility_version" : "7.0.0"
+  },
+  "tagline" : "The OpenSearch Project: https://opensearch.org/"
+  }
+  ```
 
+### Install MySQL Server:
+```
+sudo apt install mysql-server
+```
+```
+sudo mysql
+```
+  ```
+  mysql> CREATE USER 'magento'@'localhost' IDENTIFIED BY 'm0d1fyth15';
+  mysql> CREATE DATABASE magentodb;
+  mysql> GRANT ALL PRIVILEGES ON magentodb.* TO 'magento'@'localhost';
+  mysql> FLUSH PRIVILEGES;
+  mysql> exit
+  ```
+
+### Install Composer:
+```
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+```
+```
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+```
+-  To check the version of the Composer:
+```
+composer –version 
 ```
 
-<p align="center"><img src="screenshots/Ansible/ansible structure.png" width="90%" height="90%">
-<br><em>Ansible structure</em> 
-</p>
-
-<p align="center"><img src="screenshots/Ansible/asnible playbook amazon linux run.png" width="90%" height="90%">
-<br><em>Ansible-playbook results on Ec2</em> 
-</p>
-
-<p align="center"><img src="screenshots/Ansible/ansible playbook in the local inventory.png" width="90%" height="90%">
-<br><em>Ansible-playbook results on local machines</em> 
-</p>
-
-<p align="center"><img src="screenshots/Ansible/connect to ec2.png" width="90%" height="90%">
-<br><em>Connect to your Ec2</em> 
-</p>
-
-
-you can access you sonarqube by writing yourIp:9000
-
+### Download and Install Magento:
+```
+composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.4.7-beta3 /opt/magento/website
+```
+```
+cd /opt/magento/website
+```
+> [!IMPORTANT]
+> Before you run the following command you should put your sql database data you have created before and put your domain:
+```
+bin/magento setup:install \
+--base-url=http://localhost \
+--db-host=localhost \
+--db-name=magentodb \
+--db-user=magento \
+--db-password=m0d1fyth15 \
+--admin-firstname=Magento \
+--admin-lastname=Admin \
+--admin-email=ezzatelshazly7@gmail.com \
+--admin-user=admin \
+--admin-password=m0d1fyth15 \
+--language=en_US \
+--currency=USD \
+--timezone=America/Chicago \
+--use-rewrites=1 \
+--search-engine=opensearch
+```
+-  At the end of the installation, you will see an output similar to this:
+```hcl
+[SUCCESS]: Magento installation complete.
+[SUCCESS]: Magento Admin URI: /admin_zfc0hzf
+Nothing to import.
+```
+-  Before logging in to the backend, we can disable the Two Factor Authentication first and enable it again later. We need to run these commands to disable the 2FA modules:
+```
+php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
+```
+```
+php bin/magento module:disable Magento_TwoFactorAuth
+```
+```
+php bin/magento setup:di:compile
+```
+```
+php bin/magento cache:clean
+```
+-  At this point, Magento is installed, and we can navigate to the backend at " http://yourdomain.com/admin_0ty6lcq "
+-  At my case " http://localhost/admin_zfc0hzf "
 > [!NOTE]
-> You can not run sonarqube in ec2 t2.micro instance. you need a t2.large.
+> Note if there is an error when you try to access magento first put the right user replace " www-data user " with the real user you use in our case is magento user : `/etc/nginx/nginx.conf`
+> 
+> also make sure that the name of the server is right in `/etc/nginx/sites-enabled/magento.conf` so in our case is `localhost`
 
-<p align="center"><img src="screenshots/Ansible/sonarqube login.png" width="90%" height="90%">
-<br><em>SonarQube login</em> 
-</p>
+ ### Install Varnish:
+ - Next as shown in the architecture we need install varinish and redis and we need to redirect any request from `80` http to varnish `8081`.
+ - This command will install the dependencies that are needed to configure the package repository:
+```
+sudo apt-get install debian-archive-keyring curl gnupg apt-transport-https
+```
+-  The next command will import the GPG key into the package manager configuration:
+```
+curl -s -L https://packagecloud.io/varnishcache/varnish60lts/gpgkey | sudo apt-key add –
+```
+-  We have to update the package list 
+```
+sudo apt-get update
+```
+-  Install Varnish by running the following command:
+```
+sudo apt-get install varnish
+```
+-  First you need to copy the original varnish.service file to the /etc/systemd/system/ folder:
+```
+sudo cp /lib/systemd/system/varnish.service /etc/systemd/system/
+```
+-  If you want to override some of the runtime parameters in the varnish.service file, you can run the following command:
+```
+sudo systemctl edit --full varnish
+```
+-  As the archeticture shown that varnish listens on port 8081 so we need to change as shown bellow:
+```
+ExecStart=/usr/sbin/varnishd \
+	  -a :8081 \
+	  -a localhost:8443,PROXY \
+	  -p feature=+http2 \
+	  -f /etc/varnish/default.vcl \
+	  -s malloc,2g
+```
+-  Don’t forget to run:
+```
+sudo systemctl daemon-reload
+```
+-  The following command will replace `listen 80`; with `listen 8080`; in all virtual host files:
+```
+sudo find /etc/nginx -name '*.conf' -exec sed -r -i 's/\blisten ([^:]+:)?80\b([^;]*);/listen \18080\2;/g' {} ';'
+```
+Don’t forget to run:
+```
+sudo systemctl restart nginx
+```
+-  But we need all the traffic to be redirected to varnish at port 8081 first so we need to change  `/etc/nginx/sites-enabled/default` to redirect `80` to `8081`:
+```
+upstream varnish { 
+server localhost:8081;
+}
+server{
+server_name localhost;
+listen localhost:80;
+location  / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://varnish;
+}
+}
+```
+-  Also change the /etc/nginx/sites-enabled/magento.conf  to listens on port 8080 as shown in the architecture:
+```
+}
 
-<p align="center"><img src="screenshots/Ansible/create local project sonar.png" width="90%" height="90%">
-<br><em>Create SonarQube project</em> 
-</p>
+server {
+server_name localhost;
+listen 8080;
+set $MAGE_ROOT /opt/magento/website;
+set $MAGE_MODE production;
 
-### 4. Centralized Monitoring and Logging with OpenShift
-Implemented a centralized monitoring and logging system within the OpenShift cluster as we mentioned in the instructions provided in the reposistory in the instructions folder(Instructions/Instructions-for-setup-for-centralized-loggingTask8.docx). We gain insights into application performance and overall cluster health, thus enhancing operational visibility and intelligence.
+access_log /var/log/nginx/magento-access.log;
+error_log /var/log/nginx/magento-error.log;
 
-### 5. Containerization of the Java Application
+include /opt/magento/website/nginx.conf.sample;
+}
+```
+> [!IMPORTANT]
+> when you try now to access the localhost there is an error bad gateway. Tip see the error log of varnish. The buffer is less what varnish need so we need to increase buffer in the nginx cfg file 
+So add these three lines to `/etc/nginx/nginx.cfg`, must be placed in http block in nginx.conf:
+> 
+> proxy_buffer_size   128k;
+> 
+> proxy_buffers   4 256k;
+> 
+> proxy_busy_buffers_size   256k;
 
-Containerizing the Java application is a key part of this project, ensuring environment consistency and ease of deployment. The development of a Dockerfile, detailing all dependencies and configurations, leads to a containerized version of the Java application. 
+### Install Redis:
+```
+Sudo apt-get install redis-server
+```
+-  Verify that Redis is running on your server  
+```
+systemctl status redis
+```
+-  PING should be the response:
+```
+redis-cli ping 
+```
+- Check the port is `6379` used for Redis:
+```
+netstat -plnt 
+```
 > [!NOTE]
-> Before building the image you need to: chmod +x gradlew
-
-To build your image run the following command
-
-```shell
-$ sudo docker build -t nameOfYourApp:tag .
+> If netstat not available run this command: 
+```
+sudo apt install net-tools
 ```
 
-To run your image run the following command on a specific port
-
-```shell
-$ sudo docker run -d -p 8081:8080 (for example) nameOfYourApp:tag 
+### Configure Magento to use Redis for session storage:
+-  Cache system settings are stored under `[site root]/app/etc/env.php`.
+-  We need to edit this file. At my case it is under `/opt/magento/website/app/etc/env.php`.
 ```
-> [!NOTE]
-> Note if the port does not run try to add this port in the firewall
-
-
-To check your running containers
-
-```shell
-$ sudo docker ps
+Vim /opt/magento/website/app/etc/env.php 
 ```
+-  And add the following:
+```
+'session' => [
+        'save' => 'redis',
+        'redis' => [
+            'host' => '127.0.0.1',
+            'port' => '6379',
+            'timeout' => '2.5',
+            'database' => '2',
+            'compression_threshold' => '2048',
+            'compression_library' => 'gzip',
+            'log_level' => '1',
+            'max_concurrency' => '6',
+            'break_after_frontend' => '5',
+            'break_after_adminhtml' => '30',
+            'first_lifetime' => '600',
+            'bot_first_lifetime' => '60',
+            'bot_lifetime' => '7200',
+            'disable_locking' => '0',
+            'min_lifetime' => '60',
+            'max_lifetime' => '2592000',
+            'sentinel_master' => '',
+            'sentinel_servers' => '',
+            'sentinel_connect_retries' => '5',
+            'sentinel_verify_master' => '0'
+        ]
+    ],
+```
+  -  You can now test to see the result.
+###  The last thing we need to setup ssl certificate and redirect any http (80) request to https (443) and redirect all to varnish as shown in the architecture.
 
-<p align="center"><img src="screenshots/docker/docker build .png" width="90%" height="90%">
-<br><em>Docker build results</em> 
-</p>
+### Generate the SSL Certificate and Key:
+1. Create a directory to store the SSL certificate and key:
+```
+sudo mkdir -p /etc/nginx/ssl
+```
+2. Generate a self-signed SSL certificate:
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/self-signed.key -out /etc/nginx/ssl/self-signed.crt
+```
+  -  You will be prompted to enter information for the certificate. Fill in the required details as needed.	
+3. Update Nginx Configuration:
+  - Update /etc/nginx/sites-enabled/default
+  - Modify the file to include SSL settings and redirect HTTP to HTTPS:
+  ```
+upstream varnish {
+    server localhost:8081;
+}
 
-<p align="center"><img src="screenshots/docker/docker image run localhost 8081.png" width="90%" height="90%">
-<br><em>Accessing Application </em> 
-</p>
+server {
+    server_name localhost;
+    listen 80;
+    listen [::]:80;
+    return 301 https://$server_name$request_uri;
+}
 
-### 6. CI/CD Automation with Jenkins
+server {
+    server_name localhost;
+    listen 443 ssl;
+    listen [::]:443 ssl;
 
-Automate the CI/CD process using Jenkins, thereby streamlining the application deployment lifecycle. The development of a Jenkins pipeline script integrates various stages, including code build, testing, and deployment. This results in a seamless, automated pipeline that accelerates the release cycle and reduces manual intervention.
+    ssl_certificate /etc/nginx/ssl/self-signed.crt;
+    ssl_certificate_key /etc/nginx/ssl/self-signed.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
-> [!NOTE]
-> You need to add your credentials (dockerhub, github, openshift and sonarqube)
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://varnish;
+    }
+}
+  ```
 
-<p align="center"><img src="screenshots/jenkins/credentials.png" width="90%" height="90%">
-<br><em>Jenkins credentials</em> 
-</p>
+4. Update /etc/nginx/sites-enabled/magento.conf:
+  -  Modify the file to include SSL settings and redirect HTTP to HTTPS:
+  ```
+upstream fastcgi_backend {
+  server unix:/run/php/magento.sock;
+}
 
-<p align="center"><img src="screenshots/jenkins/jenkins final pipeline run.png" width="90%" height="90%">
-<br><em>Success Pipeline</em> 
-</p>
+server {
+    server_name localhost;
+    listen 8080;
+    set $MAGE_ROOT /opt/magento/website;
+    set $MAGE_MODE production;
 
-<p align="center"><img src="screenshots/jenkins/test.png" width="90%" height="90%">
-<br><em>Unit Test</em> 
-</p>
+    access_log /var/log/nginx/magento-access.log;
+    error_log /var/log/nginx/magento-error.log;
 
-<p align="center"><img src="screenshots/jenkins/pushed to dockerhub.png" width="90%" height="90%">
-<br><em>Jenkins compile Pushing to docker hub</em> 
-</p>
+    include /opt/magento/website/nginx.conf.sample;
+}
 
-<p align="center"><img src="screenshots/jenkins/push to docker hub final.png" width="90%" height="90%">
-<br><em>Build and Push to docker hub</em> 
-</p>
+server {
+    server_name localhost;
+    listen 80;
+    listen [::]:80;
+    return 301 https://$server_name$request_uri;
+}
 
-<p align="center"><img src="screenshots/jenkins/deploy to openshift.png" width="90%" height="90%">
-<br><em>Deploy to openshift and create the resources </em> 
-</p>
+server {
+    server_name localhost;
+    listen 443 ssl;
+    listen [::]:443 ssl;
 
-<p align="center"><img src="screenshots/jenkins/Deployments.png" width="90%" height="90%">
-<br><em>Deployment in the openshift cluster</em> 
-</p>
+    ssl_certificate /etc/nginx/ssl/self-signed.crt;
+    ssl_certificate_key /etc/nginx/ssl/self-signed.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
-<p align="center"><img src="screenshots/jenkins/Service.png" width="90%" height="90%">
-<br><em>Service created </em> 
-</p>
+    set $MAGE_ROOT /opt/magento/website;
+    set $MAGE_MODE production;
 
-<p align="center"><img src="screenshots/jenkins/Route.png" width="90%" height="90%">
-<br><em>Route created </em> 
-</p>
+    access_log /var/log/nginx/magento-ssl-access.log;
+    error_log /var/log/nginx/magento-ssl-error.log;
 
-<p align="center"><img src="screenshots/jenkins/access application.png" width="90%" height="90%">
-<br><em>Accessing the Application using route</em> 
-</p>
+    include /opt/magento/website/nginx.conf.sample;
+}
 
-### 7. Jenkins Shared Library
-This repository houses a comprehensive Jenkins Shared Library designed to elevate your Continuous Integration and Continuous Deployment (CI/CD) workflows. By centralizing reusable Groovy scripts, this library aims to simplify pipeline definition, enhance code reusability, and streamline your Jenkins pipeline development.
+  ```
 
-> [!NOTE]
-> Before running your shared library you need some configurations. check on allow default > version to be overridden and include @library changes in job recent changes.
-
-<p align="center"><img src="screenshots/jenkins/global shared library.png" width="90%" height="90%">
-<br><em>Global Pipeline Libraries</em> 
-</p>
-
-> [!NOTE]
-> Add your GitHub Repo,credentials and your vars path in the library path 
-
-<p align="center"><img src="screenshots/jenkins/shared library config.png" width="90%" height="90%">
-<br><em>Global Pipeline Libraries</em> 
-</p>
-
-## Conclusion
-
-This project successfully combines various advanced tools to create an efficient and automated system for deploying and managing a Spring Boot application. By using Jenkins for automation, OpenShift for orchestration, Terraform for setting up AWS infrastructure, Ansible for configuration, and Docker for containerization, we've streamlined the entire deployment process. This approach not only makes deploying applications quicker and more reliable but also ensures consistent performance and easy monitoring. The result is a straightforward, effective, and modern solution that meets the demands of today’s fast-paced software development and deployment needs.
+5. Test the Nginx configuration:
+```
+sudo nginx -t
+```
+6. Reload Nginx to apply the changes:
+```
+sudo systemctl reload nginx
+```
+  
