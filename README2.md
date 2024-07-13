@@ -378,7 +378,8 @@ redis-cli ping
 ```
 netstat -plnt 
 ```
--  Note: if netstat not available rn this command:
+> [!NOTE]
+> If netstat not available run this command: 
 ```
 sudo apt install net-tools
 ```
@@ -418,7 +419,7 @@ Vim /opt/magento/website/app/etc/env.php
     ],
 ```
   -  You can now test to see the result.
--  The last thing we need to setup ssl certificate and redirect any http (80) request to https (443) and redirect all to varnish as shown in the architecture.
+###  The last thing we need to setup ssl certificate and redirect any http (80) request to https (443) and redirect all to varnish as shown in the architecture.
 
 ### Generate the SSL Certificate and Key:
 1. Create a directory to store the SSL certificate and key:
