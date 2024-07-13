@@ -220,6 +220,7 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 ```
 composer –version 
 ```
+![composer](https://github.com/user-attachments/assets/86074a37-c72b-44c5-b071-ff08fcfd7f65)
 
 ### Download and Install Magento:
 ```
@@ -254,6 +255,8 @@ bin/magento setup:install \
 [SUCCESS]: Magento Admin URI: /admin_zfc0hzf
 Nothing to import.
 ```
+![magento succes installation](https://github.com/user-attachments/assets/9aa3f704-3153-4641-9070-c66eb405c2be)
+
 -  Before logging in to the backend, we can disable the Two Factor Authentication first and enable it again later. We need to run these commands to disable the 2FA modules:
 ```
 php bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
@@ -273,6 +276,8 @@ php bin/magento cache:clean
 > Note if there is an error when you try to access magento first put the right user replace " www-data user " with the real user you use in our case is magento user : `/etc/nginx/nginx.conf`
 > 
 > also make sure that the name of the server is right in `/etc/nginx/sites-enabled/magento.conf` so in our case is `localhost`
+
+![Magento access](https://github.com/user-attachments/assets/b05dc43e-5c85-4f21-bbdc-21e07550f7a4)
 
  ### Install Varnish:
  - Next as shown in the architecture we need install varinish and redis and we need to redirect any request from `80` http to varnish `8081`.
@@ -521,4 +526,4 @@ sudo nginx -t
 ```
 sudo systemctl reload nginx
 ```
-  
+![redirect to https with ssl](https://github.com/user-attachments/assets/9a75167a-8155-4ab7-8bcb-6ff137385580)
