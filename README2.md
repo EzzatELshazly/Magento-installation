@@ -227,7 +227,8 @@ composer create-project --repository-url=https://repo.magento.com/ magento/proje
 ```
 cd /opt/magento/website
 ```
--  Important note before you run the following command you should put your sql database data you have created before and put your domain:
+> [!IMPORTANT]
+> Before you run the following command you should put your sql database data you have created before and put your domain:
 ```
 bin/magento setup:install \
 --base-url=http://localhost \
