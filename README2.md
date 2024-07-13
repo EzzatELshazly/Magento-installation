@@ -115,7 +115,7 @@ include /opt/magento/website/nginx.conf.sample;
 ```
   - Save the file, then exit.
 > [!NOTE]
->  Important note don’t forget to change your server name to your actual name in my case I used `localhost`.
+>  Don’t forget to change your server name to your actual name in my case I used `localhost`.
 
 ### Install OpenSearch:
 ```
