@@ -231,7 +231,20 @@ cd /opt/magento/website
 ```
 > [!IMPORTANT]
 > Before you run the following command you should put your sql database data you have created before and put your domain:
+
+> [!IMPORTANT]
+> to create authentication keys:
+- Log in to the Commerce Marketplace https://marketplace.magento.com
+- If you don’t have an account, click Register.
+- Click your account name in the top right of the page and select My Profile.
+- Click Access Keys in the Marketplace tab.
+
+- Click Create a New Access Key. Enter a specific name for the keys and click OK.
+- New public and private keys are now associated with your account that you can click to copy. Save this information or keep the page open when working with your project. Use the Public key as your username and the Private key as your password.
+> 
+
 ```
+
 bin/magento setup:install \
 --base-url=http://localhost \
 --db-host=localhost \
