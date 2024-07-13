@@ -1,3 +1,4 @@
+# Magento-installation
 ## Overview:
 
 - We will set up a single server for Magento 2 Open Source, with these services:
@@ -9,7 +10,7 @@
   -  OpenSearch
 
 - Architecture as shown in the image bellow:
-![WhatsApp Image 2024-07-13 at 3 42 43 AM](https://github.com/user-attachments/assets/6f7f424d-621f-43b4-b1ff-bed7dce101c2)
+!<img width="1320" alt="Archeticture" src="https://github.com/user-attachments/assets/9f6de9ad-2ed5-44e3-b458-d8e00aa81ee9">
 
 ## Quick Start Guide:
 - I have created a new user and a new path to work in.
