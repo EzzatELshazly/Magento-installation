@@ -230,7 +230,7 @@ composer create-project --repository-url=https://repo.magento.com/ magento/proje
 cd /opt/magento/website
 ```
 > [!IMPORTANT]
-> Before you run the following command you should put your sql database data you have created before and put your domain:
+> Before running the following command, you should input the SQL database data you previously created and enter your domain:
 
 > [!IMPORTANT]
 > to create authentication keys:
@@ -286,14 +286,14 @@ php bin/magento cache:clean
 -  At this point, Magento is installed, and we can navigate to the backend at " http://yourdomain.com/admin_0ty6lcq "
 -  At my case " http://localhost/admin_zfc0hzf "
 > [!NOTE]
-> Note if there is an error when you try to access magento first put the right user replace " www-data user " with the real user you use in our case is magento user : `/etc/nginx/nginx.conf`
+> If there is an error when you try to access Magento, ensure you replace "www-data user" with the correct user you are using. In our case, it is the "magento". The file in /etc/nginx/nginx.conf.
 > 
-> also make sure that the name of the server is right in `/etc/nginx/sites-enabled/magento.conf` so in our case is `localhost`
+> Also, make sure that the server name is correct in /etc/nginx/sites-enabled/magento.conf. In our case, it should be localhost.
 
 ![Magento access](https://github.com/user-attachments/assets/b05dc43e-5c85-4f21-bbdc-21e07550f7a4)
 
  ### Install Varnish:
- - Next as shown in the architecture we need install varinish and redis and we need to redirect any request from `80` http to varnish `8081`.
+ - Next, as shown in the architecture, we need to install Varnish and Redis. We also need to redirect any HTTP requests from port 80 to Varnish on port 8081.
  - This command will install the dependencies that are needed to configure the package repository:
 ```
 sudo apt-get install debian-archive-keyring curl gnupg apt-transport-https
@@ -339,7 +339,7 @@ Don’t forget to run:
 ```
 sudo systemctl restart nginx
 ```
--  But we need all the traffic to be redirected to varnish at port 8081 first so we need to change  `/etc/nginx/sites-enabled/default` to redirect `80` to `8081`:
+- But we need all the traffic to be redirected to Varnish on port 8081 first. Therefore, we need to modify /etc/nginx/sites-enabled/default to redirect port 80 to port 8081.
 ```
 upstream varnish { 
 server localhost:8081;
@@ -372,8 +372,7 @@ include /opt/magento/website/nginx.conf.sample;
 }
 ```
 > [!IMPORTANT]
-> when you try now to access the localhost there is an error bad gateway. Tip see the error log of varnish. The buffer is less what varnish need so we need to increase buffer in the nginx cfg file 
-So add these three lines to `/etc/nginx/nginx.cfg`, must be placed in http block in nginx.conf:
+> When you try to access localhost now, there may be a 'bad gateway' error. Check the Varnish error log for details. The buffer size may be less than what Varnish needs, so we need to increase the buffer size in the Nginx configuration file. Add the following three lines to the http block in /etc/nginx/nginx.conf:
 > 
 > proxy_buffer_size   128k;
 > 
@@ -438,7 +437,7 @@ Vim /opt/magento/website/app/etc/env.php
     ],
 ```
   -  You can now test to see the result.
-###  The last thing we need to setup ssl certificate and redirect any http (80) request to https (443) and redirect all to varnish as shown in the architecture.
+###  The last step is to set up the SSL certificate and redirect any HTTP (port 80) requests to HTTPS (port 443), while also redirecting all traffic to Varnish as shown in the architecture.
 
 ### Generate the SSL Certificate and Key:
 1. Create a directory to store the SSL certificate and key:
