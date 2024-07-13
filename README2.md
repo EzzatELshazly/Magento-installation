@@ -42,12 +42,10 @@ su - magento
 sudo apt install php-{bcmath,common,curl,fpm,gd,intl,mbstring,mysql,soap,xml,xsl,zip,cli}
 ```
 - Next, we need to modify the following settings in the php.ini file:
-```
 Increase memory_limit to 512M
 Set short_open_tag to On
 Set upload_max_filesize to 128M
 Increase max_execution_time to 3600
-```
 - Let’s make the changes by executing these commands:
 ```
 sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/8.3/fpm/php.ini
