@@ -24,7 +24,7 @@
    --home /opt/magento \
 magento
 ```
-- Then, let’s give the new user a password. You will be prompted to type the password for user ‘magento’ twice, the password will not be shown there in your screen:
+- Then, let’s give the new user a password. You will be prompted to type the password for user ‘magento’ twice, the password will not be shown there in your screen: at my case the password is: 123456
 ```
 passwd magento
 ```
